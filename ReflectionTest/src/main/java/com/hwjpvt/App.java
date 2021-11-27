@@ -19,16 +19,19 @@ public class App
         var c2 = Class.forName("com.hwjpvt.entity.user.HighUser");
         var c3 = Class.forName("com.hwjpvt.entity.user.NormalUser");
         var c4 = Class.forName("com.hwjpvt.entity.user.HappyUser");
+        var c5 = Class.forName("com.hwjpvt.entity.weapon.Gun");
 
-        var clazzList = List.of(c1, c2, c3, c4);
+        var clazzList = List.of(c1, c2, c3, c4, c5);
 
-        int cnt = 0;
+        int userCnt = 0, clazzCnt = 0;
 
         for (var clazz : clazzList) {
-            cnt += 1;
+            System.out.println("第" + clazzCnt + "个clazz");
+            clazzCnt += 1;
             var clazzType = clazz.getAnnotation(ClassType.class);
             if (clazzType != null) {
                 if (Objects.equals(clazzType.value(), "user")) {
+                    userCnt += 1;
                     // 获取类的无参构造器对象并实例化User
                     var constructor = clazz.getDeclaredConstructor();
                     var obj = constructor.newInstance();
@@ -38,15 +41,14 @@ public class App
                     // 可以获取属性上的注解
                     for (var field : fields) {
                         System.out.println("field name: " + field.getName() + ", type: " + field.getType());
-                        var autowired = field.getAnnotation(Autowired.class);
-                        if (autowired != null) {
+                        if (field.isAnnotationPresent(Autowired.class)) {
                             System.out.println("用户需要一个 " + field.getType() + ", 记得创建");
                         }
                     }
 
                     // 通过反射方法设置属性
                     var setName = clazz.getMethod("setName", String.class);
-                    setName.invoke(obj, "user" + cnt);
+                    setName.invoke(obj, "user" + userCnt);
                     var setMoney = clazz.getMethod("setMoney", Float.class);
 
                     // 可以获取方法上的注解
